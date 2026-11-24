@@ -37,7 +37,7 @@ jobs:
       # The BPF objects need the BTF of a signed-BPF capable bpf-next
       # kernel, so the build runs in the same LVH VM as the package build.
       - name: Build with ${{ matrix.cc }} and run the unit tests in LVH VM
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-build-${{ matrix.cc }}
           image: kind
@@ -67,10 +67,17 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      # The job needs the action alone.
+      - name: Check out the LVH action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          sparse-checkout: .github/actions
+          persist-credentials: false
+
       # The BTF of the bpf-next kernel the other builds run on, for the
       # builds that cannot boot it themselves.
       - name: Copy the kernel BTF out of the LVH VM
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-btf
           image: kind

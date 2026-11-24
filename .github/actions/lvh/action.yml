@@ -1,0 +1,115 @@
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright (c) 2026 Authors of shirudo
+#
+# Run a command in an LVH VM, as cilium/little-vm-helper does, but try
+# up to three times to bring the VM up. The helper pulls the VM image and
+# the kernel from quay.io once and fails the job on the first error, and
+# a pull that ends early is the commonest way these jobs fail. The inputs
+# are the helper's, and a job checks the repository out before it uses
+# this action.
+name: LVH VM
+description: Run a command in an LVH VM, retrying its provision
+
+inputs:
+  test-name:
+    description: Unique test name
+    required: true
+  image:
+    description: LVH image name
+    required: true
+  image-version:
+    description: LVH image version
+    required: true
+  kernel-version:
+    description: Kernel version
+    required: true
+  host-mount:
+    description: Host directory to mount at /host in the VM
+    required: true
+  images-folder-parent:
+    description: Parent directory of the downloaded images
+    required: true
+  install-dependencies:
+    description: Install QEMU dependencies
+    required: true
+  cmd:
+    description: Commands to run in the VM, each "$" in them escaped
+    required: true
+  ssh-port:
+    description: SSH port of the VM on the host
+    required: false
+    default: '2222'
+  cpu:
+    description: CPU count
+    required: false
+  mem:
+    description: RAM size
+    required: false
+
+runs:
+  using: composite
+  steps:
+    # An attempt without a command provisions the VM and runs nothing.
+    - name: Provision the LVH VM
+      id: first
+      continue-on-error: true
+      uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+      with:
+        test-name: ${{ inputs.test-name }}
+        image: ${{ inputs.image }}
+        image-version: ${{ inputs.image-version }}
+        kernel-version: ${{ inputs.kernel-version }}
+        host-mount: ${{ inputs.host-mount }}
+        images-folder-parent: ${{ inputs.images-folder-parent }}
+        install-dependencies: ${{ inputs.install-dependencies }}
+        ssh-port: ${{ inputs.ssh-port }}
+        cpu: ${{ inputs.cpu }}
+        mem: ${{ inputs.mem }}
+
+    - name: Provision the LVH VM, second attempt
+      id: second
+      if: steps.first.outcome == 'failure'
+      continue-on-error: true
+      uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+      with:
+        test-name: ${{ inputs.test-name }}
+        image: ${{ inputs.image }}
+        image-version: ${{ inputs.image-version }}
+        kernel-version: ${{ inputs.kernel-version }}
+        host-mount: ${{ inputs.host-mount }}
+        images-folder-parent: ${{ inputs.images-folder-parent }}
+        install-dependencies: ${{ inputs.install-dependencies }}
+        ssh-port: ${{ inputs.ssh-port }}
+        cpu: ${{ inputs.cpu }}
+        mem: ${{ inputs.mem }}
+
+    - name: Provision the LVH VM, last attempt
+      if: steps.second.outcome == 'failure'
+      uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+      with:
+        test-name: ${{ inputs.test-name }}
+        image: ${{ inputs.image }}
+        image-version: ${{ inputs.image-version }}
+        kernel-version: ${{ inputs.kernel-version }}
+        host-mount: ${{ inputs.host-mount }}
+        images-folder-parent: ${{ inputs.images-folder-parent }}
+        install-dependencies: ${{ inputs.install-dependencies }}
+        ssh-port: ${{ inputs.ssh-port }}
+        cpu: ${{ inputs.cpu }}
+        mem: ${{ inputs.mem }}
+
+    - name: Run the command in the LVH VM
+      uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+      with:
+        provision: 'false'
+        test-name: ${{ inputs.test-name }}
+        image: ${{ inputs.image }}
+        image-version: ${{ inputs.image-version }}
+        kernel-version: ${{ inputs.kernel-version }}
+        host-mount: ${{ inputs.host-mount }}
+        images-folder-parent: ${{ inputs.images-folder-parent }}
+        install-dependencies: ${{ inputs.install-dependencies }}
+        ssh-port: ${{ inputs.ssh-port }}
+        cpu: ${{ inputs.cpu }}
+        mem: ${{ inputs.mem }}
+        cmd: ${{ inputs.cmd }}

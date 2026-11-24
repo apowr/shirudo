@@ -55,7 +55,7 @@ jobs:
       # capable bpf-next kernel, so the build runs in the same LVH VM as the
       # package build. The host-side suite itself needs no root, LSM or TPM.
       - name: Build with sanitizers and run the host-side suite in LVH VM
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-sanitizers-${{ matrix.compiler }}-${{ matrix.sanitize == 'thread' && 'tsan' || 'asan' }}
           image: kind
@@ -122,7 +122,7 @@ jobs:
       # or a pull request gets a minute per fuzz target, a run by hand
       # ten.
       - name: Build under MSan and run the unit tests and fuzz targets in LVH VM
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-msan
           image: kind
@@ -210,7 +210,7 @@ jobs:
       # minute per target, a run by hand ten.
       - name: Fuzz the parsers of input from outside the host in LVH VM
         id: fuzz
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-libfuzzer
           image: kind
@@ -289,7 +289,7 @@ jobs:
 
       - name: Fuzz the parsers of input from outside the host with AFL++ in LVH VM
         id: fuzz
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-afl-fuzz
           image: kind

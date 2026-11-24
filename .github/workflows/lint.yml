@@ -63,7 +63,7 @@ jobs:
       # dependencies, which the toolchain of the LVH guest the other
       # builds use provides.
       - name: Run sparse over the userspace sources in LVH VM
-        uses: cilium/little-vm-helper@c8b0bfbae3bdda7bc69fb9cd370e4b74ce84986d # v0.0.33
+        uses: ./.github/actions/lvh
         with:
           test-name: shirudo-sparse
           image: kind
