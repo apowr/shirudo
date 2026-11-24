@@ -70,7 +70,7 @@ jobs:
           image-version: bpf-next-20260603.072225
           kernel-version: bpf-next-main
           host-mount: ${{ github.workspace }}
-          images-folder-parent: ${{ github.workspace }}/../lvh
+          images-folder-parent: ${{ runner.temp }}/lvh
           install-dependencies: true
           cmd: |
             systemctl start host.mount

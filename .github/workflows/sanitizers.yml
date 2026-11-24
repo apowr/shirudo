@@ -62,7 +62,7 @@ jobs:
           image-version: bpf-next-20260603.072225
           kernel-version: bpf-next-main
           host-mount: ${{ github.workspace }}
-          images-folder-parent: ${{ github.workspace }}/../lvh
+          images-folder-parent: ${{ runner.temp }}/lvh
           install-dependencies: true
           cmd: |
             grep -aq 'signature_size' /sys/kernel/btf/vmlinux || {
@@ -129,7 +129,7 @@ jobs:
           image-version: bpf-next-20260603.072225
           kernel-version: bpf-next-main
           host-mount: ${{ github.workspace }}
-          images-folder-parent: ${{ github.workspace }}/../lvh
+          images-folder-parent: ${{ runner.temp }}/lvh
           install-dependencies: true
           cmd: |
             grep -aq 'signature_size' /sys/kernel/btf/vmlinux || {
@@ -217,7 +217,7 @@ jobs:
           image-version: bpf-next-20260603.072225
           kernel-version: bpf-next-main
           host-mount: ${{ github.workspace }}
-          images-folder-parent: ${{ github.workspace }}/../lvh
+          images-folder-parent: ${{ runner.temp }}/lvh
           install-dependencies: true
           cmd: |
             systemctl start host.mount
@@ -296,7 +296,7 @@ jobs:
           image-version: bpf-next-20260603.072225
           kernel-version: bpf-next-main
           host-mount: ${{ github.workspace }}
-          images-folder-parent: ${{ github.workspace }}/../lvh
+          images-folder-parent: ${{ runner.temp }}/lvh
           install-dependencies: true
           cmd: |
             systemctl start host.mount
